@@ -1,0 +1,10 @@
+# Install with:  pip install -r requirements.txt
+# Do this inside a virtual environment, not system-wide. See the README.
+#
+# This file is the single source of truth for what your project needs. In Week 8
+# it becomes line one of most Dockerfiles you write.
+
+requests==2.32.3    # your HTTP check and the stretch-tier alert
+PyYAML==6.0.2       # reading targets.yaml
+pytest==8.3.3       # your tests
+flask==3.0.3        # runs the fake fleet in fleet/ - your own tool does not use it

@@ -1,0 +1,50 @@
+# The fleet: every target your health-check tool looks at.
+#
+# This file is an inventory, and in Week 6 you will meet the grown-up version of
+# it: an Ansible inventory is a list of hosts and the settings that apply to
+# them, which is exactly what this is.
+#
+# It starts deliberately thin. Each target has a name and a host, and that is
+# all the core tier's first story needs. As your team builds each check, the
+# person building it adds the key that check needs:
+#
+#   port                    - added by whoever builds the TCP check
+#   health_url              - added by whoever builds the HTTP check
+#   defaults.timeout_seconds         - added by whoever builds config.py
+#   defaults.disk_threshold_percent  - added by whoever builds the disk check
+#
+# Four people, one file, neighbouring lines. You WILL get a merge conflict here.
+# That is planned. CONTRIBUTING.md tells you how to resolve it.
+#
+# Configuration lives here, not in your code. Changing the disk threshold or the
+# timeout should never mean editing a .py file.
+#
+# Secrets do NOT live here. This file is committed to GitHub. The alert webhook
+# URL in the stretch tier goes in an environment variable instead.
+
+targets:
+  - name: fleet-node-01
+    host: 127.0.0.1
+
+  - name: fleet-node-02
+    host: 127.0.0.1
+
+  - name: fleet-node-03
+    host: 127.0.0.1
+
+  - name: fleet-node-04
+    host: 127.0.0.1
+
+  # Real internet targets. Extension tier and later only. Everything above works
+  # with no internet connection at all, so leave these commented out until your
+  # core tier is finished. Uncomment them to see how a real network call
+  # behaves differently from a local one.
+  #
+  # - name: github-api
+  #   host: api.github.com
+  #
+  # A host that can never resolve. The .invalid domain is reserved, so no one
+  # can ever register it. Stretch tier.
+  #
+  # - name: fleet-node-05
+  #   host: fleet-node-05.invalid

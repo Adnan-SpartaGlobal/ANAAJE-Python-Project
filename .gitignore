@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Run artefacts. These are output, not source. Committing them causes a merge
+# conflict every time two people run the tool.
+healthcheck.log
+report.json
+reports/
+
+# Secrets. The webhook URL belongs in your environment, never in the repository.
+.env
