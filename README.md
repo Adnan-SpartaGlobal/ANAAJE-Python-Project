@@ -290,18 +290,22 @@ own key in it and four of you will add them on four branches at the same time.
 That is not a mistake in the plan. Resolving one calmly, as a group, with the
 clock running, is one of the most useful things you will do this week.
 
-## The rule about AI
+## Guidelines on AI
 
-You may use AI to help draft a function. **You write the test yourself, and it
-must pass.**
-
-Be especially careful with tests that fake the network. AI tools write those
+* Try not to use AI for this project.
+* Only use it when you really need to fill-in in a gap but get AI to give you a general example of how something works or a hint in the right direction rather than the solution.
+* Aim is to present working software by the end of the project, however, it is more preferable that the code is imperfect but you can explain well (even that it does not work 100% but you can explain what you have been doing to try to get it to work).
+* Write unit tests and your code as much as possible with much or any use of AI - use it where absolutely necessary.
+  * It is best that **you write the test yourself, and it must pass.**
+  * Be especially careful with tests that fake the network. AI tools write those
 confidently, and a badly built fake passes no matter what your code does. A
 green test that tests nothing is worse than no test, because you believe it.
 Before you trust a passing test, break the code on purpose and check that the
 test goes red.
 
-Reviewing code you did not write, and proving it works, is a real part of a
+* When presenting, be transparent about how/where/why AI has been used.
+* No matter where AI has been used, you should still be able to explain the code you are responsible for and justify the way it has been coded.
+  * Reviewing code you did not write, and proving it works, is a real part of a
 junior engineer's job. A test you wrote is evidence. A function you accepted is
 a guess.
 
