@@ -8,7 +8,10 @@ healthcheck.py already calls it. Fill in the body.
 
 from __future__ import annotations
 
-from . import DOWN, OK, CheckResult
+from . import DOWN, OK, DEGRADED, CheckResult
+
+import socket
+import time
 
 CHECK_NAME = "tcp"
 
@@ -43,4 +46,64 @@ def check_tcp(name: str, host: str, port: int, timeout: float) -> CheckResult:
     works. Then read fleet/node_broken.py.
     """
     # TODO
+
+    start_time = time.perf_counter()
+    latency = (time.perf_counter() - start_time) * 1000
+
+    try:
+        with socket.create_connection((host, port), timeout=timeout):
+            latency = (time.perf_counter() - start_time) * 1000
+
+            return CheckResult(
+                target=name,
+                check=CHECK_NAME,
+                state=OK,
+                detail=f"Connected to {host}:{port}",
+                latency_ms = round(latency, 5)
+            )
+
+    except ConnectionRefusedError:
+        latency = (time.perf_counter() - start_time) * 1000
+
+        return CheckResult(
+            target=name,
+            check=CHECK_NAME,
+            state=DOWN,
+            detail=f"Refused to connect to {host}:{port}",
+            latency_ms = round(latency, 5)
+
+        )
+    except socket.gaierror:
+        latency = (time.perf_counter() - start_time) * 1000
+
+        return CheckResult(
+            target=name,
+            check=CHECK_NAME,
+            state=DOWN,
+            detail=f"Could not find hostname: {host}",
+            latency_ms = round(latency, 5)
+        )
+    except TimeoutError:
+        latency = (time.perf_counter() - start_time) * 1000
+
+        return CheckResult(
+            target=name,
+            check=CHECK_NAME,
+            state=DOWN,
+            detail=f"Connection timed out after {timeout} seconds",
+            latency_ms = round(latency, 5)
+        )
+    except OSError as error:
+        latency = (time.perf_counter() - start_time) * 1000
+
+        return CheckResult(
+            target=name,
+            check=CHECK_NAME,
+            state=DOWN,
+            detail=f"Network error: {error}",
+            latency_ms = round(latency, 5)
+        )
+
+
+
     raise NotImplementedError("check_tcp() in checks/tcp.py is not written yet")
