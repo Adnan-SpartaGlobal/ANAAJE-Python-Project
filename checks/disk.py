@@ -47,9 +47,9 @@ def check_reported_disk(name: str, payload: dict, threshold_percent: int) -> Che
         return DEGRADED("No valid disk usage data found in payload")
 
     if percent_used < threshold_percent:
-        return OK
+        return CheckResult(name=name, check=CHECK_NAME, state=OK, detail=f"Disk usage is {percent_used}% which is below the threshold of {threshold_percent}%")
     else:
-        return DEGRADED(f"Disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
+        return CheckResult(name=name, check=CHECK_NAME, state=DEGRADED, detail=f"Disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
 
 
 def check_local_disk(threshold_percent: int, path: Path | None = None) -> CheckResult:
@@ -69,6 +69,6 @@ def check_local_disk(threshold_percent: int, path: Path | None = None) -> CheckR
     percent_used = (usage.used / usage.total) * 100
 
     if percent_used < threshold_percent:
-        return OK
+        return CheckResult(name="local", check=CHECK_NAME, state=OK, detail=f"Local disk usage is {percent_used}% which is below the threshold of {threshold_percent}%")
     else:
-        return DEGRADED(f"Local disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
+        return CheckResult(name="local", check=CHECK_NAME, state=DEGRADED, detail=f"Local disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
