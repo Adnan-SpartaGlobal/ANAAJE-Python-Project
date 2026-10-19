@@ -25,19 +25,21 @@
 defaults:
   disk_threshold_percent: 80
 
+
 targets:
   - name: fleet-node-01
     host: 127.0.0.1
-    port: 8084
+    port: 8801
+    health-url:
 
 
   - name: fleet-node-02
     host: 127.0.0.1
-    port: 8084
+    port: 8802
 
   - name: fleet-node-03
     host: 127.0.0.1
-    port: 8084
+    port: 8803
 
   - name: fleet-node-04
     host: 127.0.0.1

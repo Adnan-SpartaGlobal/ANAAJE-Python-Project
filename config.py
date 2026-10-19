@@ -79,11 +79,13 @@ def load_config(path: Path) -> Config:
         raise ConfigError(f"Invalid YAML: {error}")
 
     targets = text_yaml["targets"]
+    defaults = text_yaml["defaults"]
+
     if targets is None:
         raise ConfigError(f"Yaml file is empty")
 
     validate(targets)
-    return Config(targets=targets, timeout_seconds=2, disk_threshold_percent= 80)
+    return Config(targets=targets, timeout_seconds=2, disk_threshold_percent=defaults["disk_threshold_percent"])
 
 def validate(targets):
     faults = []
@@ -92,6 +94,8 @@ def validate(targets):
         for keys in required_keys:
             if keys not in target:
                 faults.append(f"Missing Key: {keys}")
+            
+        
         if faults:
             raise ConfigError(faults)
     
