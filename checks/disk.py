@@ -16,6 +16,7 @@ YOU WRITE THIS. The signatures and contracts are fixed.
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 
 from . import DEGRADED, OK, CheckResult
 
@@ -40,8 +41,15 @@ def check_reported_disk(name: str, payload: dict, threshold_percent: int) -> Che
     The same honest reading from node 01 now crosses the line.
     """
     # TODO
-    raise NotImplementedError(
-        "check_reported_disk() in checks/disk.py is not written yet")
+    try:
+        percent_used = payload["disk"]["percent_used"]
+    except (KeyError, TypeError):
+        return DEGRADED("No valid disk usage data found in payload")
+
+    if percent_used < threshold_percent:
+        return OK
+    else:
+        return DEGRADED(f"Disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
 
 
 def check_local_disk(threshold_percent: int, path: Path | None = None) -> CheckResult:
@@ -57,5 +65,10 @@ def check_local_disk(threshold_percent: int, path: Path | None = None) -> CheckR
     Same states as above: DEGRADED at or above the threshold, OK below it.
     """
     # TODO
-    raise NotImplementedError(
-        "check_local_disk() in checks/disk.py is not written yet")
+    usage = shutil.disk_usage(path or Path.cwd())
+    percent_used = (usage.used / usage.total) * 100
+
+    if percent_used < threshold_percent:
+        return OK
+    else:
+        return DEGRADED(f"Local disk usage is {percent_used}% which is at or above the threshold of {threshold_percent}%")
