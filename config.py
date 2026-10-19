@@ -16,7 +16,7 @@ from pathlib import Path
 DEFAULT_TIMEOUT_SECONDS = 2.0
 DEFAULT_DISK_THRESHOLD_PERCENT = 85
 
-required_keys = ("name", "host") 
+required_keys = ("name", "host", "port", "health_url") 
 
 class ConfigError(Exception):
     """Raised when the config cannot be used. Carries EVERY problem found."""
@@ -77,6 +77,8 @@ def load_config(path: Path) -> Config:
         raise ConfigError(f"Cannot read config file: {error}")
     except yaml.YAMLError as error:
         raise ConfigError(f"Invalid YAML: {error}")
+    if not isinstance(text_yaml, dict):
+        raise ConfigError([f"config file is not a mapping: {path}"])
 
     targets = text_yaml["targets"]
     defaults = text_yaml["defaults"]
@@ -94,8 +96,17 @@ def validate(targets):
         for keys in required_keys:
             if keys not in target:
                 faults.append(f"Missing Key: {keys}")
-            
-        
+
+            port = target.get("port")
+            if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
+                faults.append(
+                    f"app_port must be an integer between 1 and 65535, got {port!r}"
+                )
+
+            url = target.get("health_url")
+            if not isinstance(url, str) or not url.startswith("http"):
+                faults.append(f"health_check_url must start with http, got {url!r}")
+                
         if faults:
             raise ConfigError(faults)
     
