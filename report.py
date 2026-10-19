@@ -17,6 +17,10 @@ from pathlib import Path
 
 from checks import DEGRADED, DOWN, OK, CheckResult
 
+import json
+
+from datetime import datetime
+
 
 def worst_state(results: list[CheckResult]) -> str:
     """The overall verdict for the whole run. DOWN beats DEGRADED beats OK.
@@ -85,4 +89,14 @@ def write_json_report(results: list[CheckResult], path: Path) -> Path:
     same file and disagree about when it happened.
     """
     # TODO
-    raise NotImplementedError("write_json_report() in report.py is not written yet")
+
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(path, "w", encoding="utf-8") as file:
+        json.dump(results, file, ident=2)
+
+    return output_path
+
+
+    # raise NotImplementedError("write_json_report() in report.py is not written yet")
