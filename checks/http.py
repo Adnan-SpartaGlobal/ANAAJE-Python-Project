@@ -8,6 +8,7 @@ already calls it.
 
 from __future__ import annotations
 
+import requests
 from . import DEGRADED, DOWN, OK, CheckResult
 
 CHECK_NAME = "http"
@@ -44,5 +45,44 @@ def check_http(name: str, url: str, timeout: float) -> CheckResult:
     requests exceptions are related to each other in the same way the socket
     ones are, so the order of your except blocks matters again.
     """
-    # TODO
-    raise NotImplementedError("check_http() in checks/http.py is not written yet")
+    extra = {}
+    try:
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            state = DEGRADED
+            detail = f"HTTP {response.status_code}, {response.text.strip()[:100] or 'no reason given'}"
+        elif response.json().get("status") == "ok":
+            state = OK
+            detail = f"HTTP {response.status_code}, status ok"
+            extra = {"payload": response.json()}
+        else:
+            state = DEGRADED
+            detail = f"HTTP 200, status was {response.json().get("status")!r}"
+
+    except requests.exceptions.JSONDecodeError:
+        state = DEGRADED
+        detail = f"HTTP {response.status_code}, JSON is invalid"
+
+    except AttributeError:
+        state = DEGRADED
+        detail = f"HTTP {response.status_code}, body was not a JSON object"
+
+    except requests.exceptions.Timeout:
+        state =  DOWN
+        detail = f"No response within {timeout}s"
+
+    except requests.exceptions.ConnectionError as error:
+        state = DOWN
+        message = str(error).lower()
+        if "refused" in message:
+            detail = "Connection refused: nothing listening on that port"
+        elif "resolve" in message or "name or service" in message or "nodename" in message:
+            detail = "Could not resolve hostname"
+        else:
+            detail = "Connection failed"
+
+    except requests.exceptions.RequestException as error:
+        state = DOWN
+        detail = f"unexpected request error ({type(error).__name__})"
+
+    return CheckResult(name, CHECK_NAME, state, detail, extra=extra)
