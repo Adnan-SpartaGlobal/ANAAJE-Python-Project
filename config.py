@@ -85,7 +85,7 @@ def load_config(path: Path) -> Config:
         raise ConfigError(f"Yaml file is empty")
 
     validate(targets)
-    return Config(targets=targets, timeout_seconds=2, disk_threshold_percent=defaults["disk_threshold_percent"])
+    return Config(targets=targets, timeout_seconds=defaults["timeout_seconds"], disk_threshold_percent=defaults["disk_threshold_percent"])
 
 def validate(targets):
     faults = []
