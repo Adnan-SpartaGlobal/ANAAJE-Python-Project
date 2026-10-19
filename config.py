@@ -97,16 +97,18 @@ def validate(targets):
             if keys not in target:
                 faults.append(f"Missing Key: {keys}")
 
+        if "port" in target:
             port = target.get("port")
             if not isinstance(port, int) or isinstance(port, bool) or not 1 <= port <= 65535:
                 faults.append(
                     f"app_port must be an integer between 1 and 65535, got {port!r}"
                 )
 
+        if "health_url" in target:
             url = target.get("health_url")
             if not isinstance(url, str) or not url.startswith("http"):
                 faults.append(f"health_check_url must start with http, got {url!r}")
-                
+
         if faults:
             raise ConfigError(faults)
     
