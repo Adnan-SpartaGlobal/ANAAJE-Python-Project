@@ -318,4 +318,3 @@ the pipeline gate: run it with node 04 missing and nothing deploys.
 Be ready to answer: which of these findings would you want to be woken up for
 at 3am, and which could wait until morning?
 
-testing main protection

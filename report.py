@@ -25,7 +25,17 @@ def worst_state(results: list[CheckResult]) -> str:
     Core tier.
     """
     # TODO
-    raise NotImplementedError("worst_state() in report.py is not written yet")
+    worst_state = ''
+    for result in results:
+        if result.state == DEGRADED:
+            return DEGRADED
+        elif result.state == DOWN:
+            worst_state = DOWN
+        else:
+            if worst_state != DOWN:
+                worst_state = OK
+    return worst_state            
+
 
 
 def render_table(results: list[CheckResult]) -> str:
@@ -44,13 +54,21 @@ def render_table(results: list[CheckResult]) -> str:
     terminals and in any file the output is saved to.
     """
     # TODO
-    raise NotImplementedError("render_table() in report.py is not written yet")
+    summary_text_table = f"{'TARGET':<15} {'CHECK':<6} {'STATE':<9} DETAIL\n"
+    for result in results:
+        summary += f"{result.name:<15} {result.check:<6} {result.state:<9} {result.detail}\n"
+    return summary
 
 
 def summarise(results: list[CheckResult]) -> dict:
     """Count results by state: {"OK": 7, "DEGRADED": 2, "DOWN": 3}. Core tier."""
     # TODO
-    raise NotImplementedError("summarise() in report.py is not written yet")
+    summary_dict = {"OK":0, "DEGRADED":0, "DOWN": 0}
+    for result in results:
+        summary_dict[result.state] += 1
+
+    return summary_dict
+ 
 
 
 def write_json_report(results: list[CheckResult], path: Path) -> Path:
