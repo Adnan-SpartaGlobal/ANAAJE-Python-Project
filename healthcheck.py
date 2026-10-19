@@ -74,8 +74,26 @@ def check_target(target: dict, timeout: float, threshold: int,
         inventing a problem?
     """
     # TODO
-    raise NotImplementedError("check_target() in healthcheck.py is not written yet")
+    # raise NotImplementedError("check_target() in healthcheck.py is not written yet")
+    # CORE
+    results = []
+    tcp = check_tcp(target["name"], target["host"], target["port"], timeout)
+    results.append(tcp)
 
+    # EXTENSION: HTTP only if something is listening on the port. A refused
+    # port would just produce a second, redundant failure for the same cause.
+    if tcp.state != DOWN and target.get("health_url"):
+        http = check_http(target["name"], target["health_url"], timeout)
+        results.append(http)
+
+        # No payload, or no disk figures in it, means the target never
+        # claimed to report disk. Nothing to check, so nothing to flag.
+        payload = http.extra.get("payload")
+        if payload and "disk_used_percent" in payload:  # use your real key
+            results.append(
+                check_reported_disk(target["name"], payload, threshold))
+
+    return results
 
 def overall_exit_code(results: list[CheckResult]) -> int:
     """Turn the worst result into an exit code from the contract above.
@@ -84,8 +102,12 @@ def overall_exit_code(results: list[CheckResult]) -> int:
     EXIT_DEGRADED or EXIT_DOWN.
     """
     # TODO
-    raise NotImplementedError(
-        "overall_exit_code() in healthcheck.py is not written yet")
+    worst = report.worst_state(results)
+    if worst == DOWN:
+        return EXIT_DOWN
+    if worst == DEGRADED:
+        return EXIT_DEGRADED
+    return EXIT_OK
 
 
 # --------------------------------------------------------------------------
