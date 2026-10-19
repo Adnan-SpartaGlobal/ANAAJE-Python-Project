@@ -18,6 +18,10 @@ from pathlib import Path
 
 from checks import DEGRADED, DOWN, OK, CheckResult
 
+import json
+
+from datetime import datetime
+
 
 def worst_state(results: list[CheckResult]) -> str:
     """The overall verdict for the whole run. DOWN beats DEGRADED beats OK.
@@ -85,6 +89,7 @@ def write_json_report(results: list[CheckResult], path: Path) -> Path:
     incident report is a real hazard: two people in different places read the
     same file and disagree about when it happened.
     """
+    # TODO
 
     output_path = Path(path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -95,6 +100,7 @@ def write_json_report(results: list[CheckResult], path: Path) -> Path:
             file,
             indent=2,
         )
+        json.dump(results, file, indent=2)
 
     return output_path
 

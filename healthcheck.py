@@ -92,6 +92,10 @@ def check_target(target: dict, timeout: float, threshold: int,
         if payload and "disk" in payload:  # use your real key
             results.append(
                 check_reported_disk(target["name"], payload, threshold))
+    # STRETCH: ping does not depend on TCP, so it runs regardless
+    if with_ping:
+        results.append(
+            check_ping(target["name"], target["host"], max(1, int(timeout))))
 
     return results
 
