@@ -15,7 +15,8 @@ YOU WRITE THIS. The signatures and contracts are fixed.
 """
 
 from __future__ import annotations
-
+import platform
+import subprocess
 from . import DEGRADED, OK, CheckResult
 
 CHECK_NAME = "ping"
@@ -33,8 +34,12 @@ def ping_command(host: str, count: int = 1, timeout_seconds: int = 2) -> list[st
     A list goes straight to the operating system with no shell in between, so a
     strange host name cannot turn into a shell command.
     """
-    # TODO
-    raise NotImplementedError("ping_command() in checks/ping.py is not written yet")
+    os_system = platform.system()
+
+    if os_system == "Darwin" or os_system == "Linux":
+        return ["ping", "-c", str(count), "-W", str(timeout_seconds), host]
+    else:  # Windows
+        return ["ping", "-n", str(count), "-w", str(timeout_seconds * 1000), host]
 
 
 def check_ping(name: str, host: str, timeout_seconds: int = 2) -> CheckResult:
@@ -50,5 +55,16 @@ def check_ping(name: str, host: str, timeout_seconds: int = 2) -> CheckResult:
     Handle two things going wrong with ping itself: it might not be installed,
     and it might hang. subprocess.run takes a timeout too.
     """
-    # TODO
-    raise NotImplementedError("check_ping() in checks/ping.py is not written yet")
+    ping = ping_command(host, count=1, timeout_seconds=timeout_seconds)
+
+    try:
+        result = subprocess.run(ping, capture_output=True, text=True, timeout=timeout_seconds)
+        return CheckResult(OK if result.returncode == 0 else DEGRADED, f"{name}: ping returned {result.returncode}")
+
+    except subprocess.TimeoutExpired:
+        return CheckResult(DEGRADED, f"{name}: ping timed out after {timeout_seconds} seconds")
+    except FileNotFoundError:
+        return CheckResult(DEGRADED, f"{name}: ping command not found on this system")
+    except Exception as e:
+        return CheckResult(DEGRADED, f"{name}: ping failed with exception: {e}")
+    
