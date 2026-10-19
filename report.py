@@ -12,6 +12,7 @@ already call them.
 """
 
 from __future__ import annotations
+import json
 
 from pathlib import Path
 
@@ -84,5 +85,18 @@ def write_json_report(results: list[CheckResult], path: Path) -> Path:
     incident report is a real hazard: two people in different places read the
     same file and disagree about when it happened.
     """
-    # TODO
-    raise NotImplementedError("write_json_report() in report.py is not written yet")
+
+    output_path = Path(path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    with open(path, "w", encoding="utf-8") as file:
+        json.dump(
+            [result.__dict__ for result in results],
+            file,
+            indent=2,
+        )
+
+    return output_path
+
+
+    # raise NotImplementedError("write_json_report() in report.py is not written yet")
