@@ -89,7 +89,7 @@ def check_target(target: dict, timeout: float, threshold: int,
         # No payload, or no disk figures in it, means the target never
         # claimed to report disk. Nothing to check, so nothing to flag.
         payload = http.extra.get("payload")
-        if payload and "disk_used_percent" in payload:  # use your real key
+        if payload and "disk" in payload:  # use your real key
             results.append(
                 check_reported_disk(target["name"], payload, threshold))
 
