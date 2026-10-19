@@ -94,7 +94,7 @@ def write_json_report(results: list[CheckResult], path: Path) -> Path:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(path, "w", encoding="utf-8") as file:
-        json.dump(results, file, ident=2)
+        json.dump(results, file, indent=2)
 
     return output_path
 
