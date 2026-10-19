@@ -8,7 +8,7 @@ healthcheck.py already depends on their shape.
 """
 
 from __future__ import annotations
-
+import yaml
 from pathlib import Path
 
 # Used if targets.yaml has no defaults block yet. Your team decides whether
@@ -16,6 +16,7 @@ from pathlib import Path
 DEFAULT_TIMEOUT_SECONDS = 2.0
 DEFAULT_DISK_THRESHOLD_PERCENT = 85
 
+required_keys = ("name", "host") 
 
 class ConfigError(Exception):
     """Raised when the config cannot be used. Carries EVERY problem found."""
@@ -67,4 +68,28 @@ def load_config(path: Path) -> Config:
     contacted nothing and changed nothing, which is why it can stop cleanly.
     """
     # TODO
-    raise NotImplementedError("load_config() in config.py is not written yet")
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            text_yaml = yaml.safe_load(file)
+    except FileNotFoundError as error:
+        raise ConfigError(f"File could not be found. {error}")
+    except PermissionError as error:
+        raise ConfigError(f"Cannot read config file: {error}")
+    except yaml.YAMLError as error:
+        raise ConfigError(f"Invalid YAML: {error}")
+
+    targets = text_yaml["targets"]
+    if targets is None:
+        raise ConfigError(f"Yaml file is empty")
+
+    validate(targets)
+    return targets
+
+def validate(targets):
+    faults = []
+    for keys in required_keys:
+        if keys not in targets:
+            faults.append(f"Missing Key: {keys}")
+    if faults:
+        raise ConfigError(faults)
+    
