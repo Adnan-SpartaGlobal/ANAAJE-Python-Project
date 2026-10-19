@@ -56,8 +56,8 @@ def render_table(results: list[CheckResult]) -> str:
     # TODO
     summary_text_table = f"{'TARGET':<15} {'CHECK':<6} {'STATE':<9} DETAIL\n"
     for result in results:
-        summary += f"{result.name:<15} {result.check:<6} {result.state:<9} {result.detail}\n"
-    return summary
+        summary_text_table += f"{result.target:<15} {result.check:<6} {result.state:<9} {result.detail}\n"
+    return summary_text_table
 
 
 def summarise(results: list[CheckResult]) -> dict:

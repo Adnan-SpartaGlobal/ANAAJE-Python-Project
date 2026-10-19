@@ -83,13 +83,15 @@ def load_config(path: Path) -> Config:
         raise ConfigError(f"Yaml file is empty")
 
     validate(targets)
-    return targets
+    return Config(targets=targets, timeout_seconds=2, disk_threshold_percent= 80)
 
 def validate(targets):
     faults = []
-    for keys in required_keys:
-        if keys not in targets:
-            faults.append(f"Missing Key: {keys}")
-    if faults:
-        raise ConfigError(faults)
+
+    for target in targets:
+        for keys in required_keys:
+            if keys not in target:
+                faults.append(f"Missing Key: {keys}")
+        if faults:
+            raise ConfigError(faults)
     
