@@ -59,8 +59,11 @@ def render_table(results: list[CheckResult]) -> str:
     terminals and in any file the output is saved to.
     """
     # TODO
-    summary_text_table = f"{'TARGET':<15} {'CHECK':<6} {'STATE':<9} DETAIL\n"
+    summary_text_table = f" \n-------- FIRST TARGET ----------- \n{'TARGET':<15} {'CHECK':<6} {'STATE':<9} DETAIL\n"
+    name = results[0].target
     for result in results:
+        if result.target != name: summary_text_table += "\n-------- NEXT TARGET ----------- \n"
+        name = result.target
         summary_text_table += f"{result.target:<15} {result.check:<6} {result.state:<9} {result.detail}\n"
     return summary_text_table
 
