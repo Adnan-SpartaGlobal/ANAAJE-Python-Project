@@ -65,6 +65,8 @@ def render_table(results: list[CheckResult]) -> str:
         if result.target != name: summary_text_table += "\n-------- NEXT TARGET ----------- \n"
         name = result.target
         summary_text_table += f"{result.target:<15} {result.check:<6} {result.state:<9} {result.detail}\n"
+        if result.extra != {}:
+            summary_text_table += f"Additional Info: {result.extra} \n"
     return summary_text_table
 
 
